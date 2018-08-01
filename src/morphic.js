@@ -2929,6 +2929,7 @@ Morph.prototype.stepFrame = function () {
         }
         this.step();
         this.children.forEach(function (child) {
+            // console.log(child); // add by cxq
             child.stepFrame();
         });
     }
@@ -11112,6 +11113,8 @@ HandMorph.prototype.grab = function (aMorph) {
 };
 
 HandMorph.prototype.drop = function () {
+
+    // 拖动组件到主交互界面 by cxq
     var target, morphToDrop;
     if (this.children.length !== 0) {
         morphToDrop = this.children[0];
@@ -11745,6 +11748,7 @@ WorldMorph.prototype.condenseDamages = function () {
 };
 
 WorldMorph.prototype.doOneCycle = function () {
+    
     this.stepFrame();
     this.stepAnimations();
     this.updateBroken();

@@ -1,0 +1,19 @@
+var morphic=require('./morphic.js');
+var widgets=require('./widgets.js');
+var blocks=require('./blocks.js');
+var threads=require('./threads.js');
+var objects=require('./objects.js');
+var gui=require('./gui.js');
+var paint=require('./paint.js');
+var lists=require('./lists.js');
+var byob=require('./byob.js');
+var tables=require('./tables.js');
+var symbols=require('./symbols.js');
+var sketch=require('./sketch.js');
+var xml=require('./xml.js');
+var store=require('./store.js');
+var locale=require('./locale.js');
+var cloud=require('./cloud.js');
+var sha512=require('./sha512.js');
+var FileSaver=require('./FileSaver.min.js');
+

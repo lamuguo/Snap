@@ -3180,6 +3180,15 @@ IDE_Morph.prototype.projectMenu = function () {
         );
     }
 
+    if (this.stage.globalBlocks.length) {
+        menu.addItem(
+            'Submit blocks...',
+            function () {myself.submitGlobalBlocks(); },
+            'show global custom block definitions as XML' +
+                '\nin a new browser window'
+        );
+    }
+
     menu.addItem(
         'Export summary...',
         function () {myself.exportProjectSummary(); },
@@ -3873,6 +3882,21 @@ IDE_Morph.prototype.exportProject = function (name, plain) {
 IDE_Morph.prototype.exportGlobalBlocks = function () {
     if (this.stage.globalBlocks.length > 0) {
         new BlockExportDialogMorph(
+            this.serializer,
+            this.stage.globalBlocks
+        ).popUp(this.world());
+    } else {
+        this.inform(
+            'Export blocks',
+            'this project doesn\'t have any\n'
+                + 'custom global blocks yet'
+        );
+    }
+};
+
+IDE_Morph.prototype.submitGlobalBlocks = function () {
+    if (this.stage.globalBlocks.length > 0) {
+        new BlockSubmitDialogMorph(
             this.serializer,
             this.stage.globalBlocks
         ).popUp(this.world());
@@ -4606,6 +4630,80 @@ IDE_Morph.prototype.saveCanvasAs = function (canvas, fileName) {
 IDE_Morph.prototype.saveXMLAs = function(xml, fileName) {
     // wrapper to saving XML files with a proper type tag.
     this.saveFileAs(xml, 'text/xml;chartset=utf-8', fileName);
+};
+
+IDE_Morph.prototype.sbumitXMLAs = function(xml) {
+    // wrapper to saving XML files with a proper type tag.
+    console.log(xml);
+    this.request(
+        'POST',
+        '/snap/getxml.php',
+        null,
+        nop,
+        null,
+        true,
+        xml
+    );
+    
+};
+
+IDE_Morph.prototype.request = function (
+    method,
+    path,
+    onSuccess,
+    onError,
+    errorMsg,
+    wantsRawResponse,
+    body) {
+
+    var request = new XMLHttpRequest(),
+        myself = this;
+
+    try {
+        request.open(
+            method,
+            'http://10.19.138.111' + path,
+            true
+        );
+        request.setRequestHeader("Content-Type", "text/xml");
+        request.withCredentials = false;
+        request.onreadystatechange = function () {
+            if (request.readyState === 4) {
+                if (request.responseText) {
+                    var response =
+                        (!wantsRawResponse ||
+                        (request.responseText.indexOf('{"errors"') === 0)) ?
+                            JSON.parse(request.responseText) :
+                            request.responseText;
+
+                    if (response.errors) {
+                       onError.call(
+                            null,
+                            response.errors[0],
+                            errorMsg
+                        );
+                    } else {
+                        if (onSuccess) {
+                            onSuccess.call(null, response.message || response);
+                        }
+                    }
+                } else {
+                    if (onError) {
+                        onError.call(
+                            null,
+                            errorMsg || Cloud.genericErrorMessage,
+                            myself.url
+                        );
+                    } else {
+                        myself.genericError();
+                    }
+                }
+            }
+        };
+        request.send(body);
+    } catch (err) {
+        onError.call(this, err.toString(), 'Cloud Error');
+    }
 };
 
 IDE_Morph.prototype.switchToUserMode = function () {
