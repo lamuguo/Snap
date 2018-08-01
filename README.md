@@ -1,6 +1,7 @@
 
 
 post 提交路径在 gui.js 第4600行的 sbumitXMLAs 方法中 默认 /snap/getxml.php
+
 post 提交ip 在gui.js 的第4624行的 request 方法中 ，默认http://10.19.138.111
 
 Snap! Build Your Own Blocks
