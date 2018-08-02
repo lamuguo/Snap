@@ -22,13 +22,39 @@
         <script type="text/javascript" src="src/cloud.js?version=2018-10-04"></script>
         <script type="text/javascript" src="src/sha512.js?version=2018-10-02"></script>
         <script type="text/javascript" src="src/FileSaver.min.js?version=2018-10-02"></script>
+		<script type="text/javascript" src="jquery-3.3.1.min.js?version=2018-06-21"></script>
         <script type="text/javascript">
             var world;
             window.onload = function () {
                 world = new WorldMorph(document.getElementById('world'));
                 world.worldCanvas.focus();
-                new IDE_Morph().openIn(world);
-                loop();
+				new IDE_Morph().openIn(world);
+				let testf= {
+					target : {
+						files: '1533106060.xml'
+					},
+					dataTransfer : {
+						files: '1533106060.xml',
+						URL: 'http://10.19.138.111/snap/data/1533106060.xml'
+					}
+				}
+
+				function GetQueryString(name)
+				{
+					var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+					var r = window.location.search.substr(1).match(reg);
+					if (r!=null) return unescape(r[2]); return null;
+				}
+
+				var tempVersion = GetQueryString("xml");
+
+        		loop();
+				$.get("./data/"+tempVersion+".xml",
+    				function(data,status){
+    				console.log(data);
+					var objFile=data;
+        			world.hand.processDrop({target:{files:[objFile]}});
+        			});
 			};
             function loop() {
                 requestAnimationFrame(loop);
