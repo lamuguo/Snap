@@ -49,12 +49,12 @@
 				var tempVersion = GetQueryString("xml");
 
         		loop();
-				$.get("./data/"+tempVersion+".xml",
+				$.get("../../snap/data/"+tempVersion+".xml",
     				function(data,status){
-    				console.log(data);
-					var objFile=data;
+				var objFile=new File([data],'temp.xml',{type: "text/plain"});;
         			world.hand.processDrop({target:{files:[objFile]}});
-        			});
+        			},
+				"text");
 			};
             function loop() {
                 requestAnimationFrame(loop);
