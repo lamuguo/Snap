@@ -4634,18 +4634,27 @@ IDE_Morph.prototype.saveXMLAs = function(xml, fileName) {
 
 IDE_Morph.prototype.sbumitXMLAs = function(xml) {
     // wrapper to saving XML files with a proper type tag.
+    const aaae=this;
     console.log(xml);
+                                var global_pid = GetQueryString("pid");
+                                var global_uid = GetQueryString("uid");
     this.request(
         'POST',
-        '/snap/getxml.php',
+        '/snap/getxml.php?uid='+global_uid+'&pid='+global_pid,
         null,
         nop,
         null,
         true,
         xml
-    );
-    
+	);
+
 };
+function GetQueryString(name)
+                                {
+                                        var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+                                        var r = window.location.search.substr(1).match(reg);
+                                        if (r!=null) return unescape(r[2]); return null;
+                                }
 
 IDE_Morph.prototype.request = function (
     method,
