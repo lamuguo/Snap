@@ -46,15 +46,19 @@
 					if (r!=null) return unescape(r[2]); return null;
 				}
 
-				var tempVersion = GetQueryString("xml");
+                var tempVersion = GetQueryString("xml");
+                var global_pid = GetQueryString("pid");
+                var global_uid = GetQueryString("uid");
 
         		loop();
-				$.get("../../snap/data/"+tempVersion+".xml",
-    				function(data,status){
-				var objFile=new File([data],'temp.xml',{type: "text/plain"});;
-        			world.hand.processDrop({target:{files:[objFile]}});
-        			},
-				"text");
+        		if (tempVersion !== null) {
+                    $.get("../../snap/data/"+tempVersion+".xml",
+                        function(data,status){
+                            var objFile=new File([data],'temp.xml',{type: "text/plain"});;
+                            world.hand.processDrop({target:{files:[objFile]}});
+                        },
+                        "text");
+				}
 			};
             function loop() {
                 requestAnimationFrame(loop);
