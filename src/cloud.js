@@ -49,6 +49,7 @@ Cloud.prototype.init = function () {
     this.username = null;
 };
 
+// TODO(lamuguo): This is for "cloud" related feature. Please have a plan to improve it.
 Cloud.prototype.knownDomains = {
     'Snap!Cloud' : 'https://cloud.snap.berkeley.edu',
     'Snap!Cloud (cs10)' : 'https://snap-cloud.cs10.org',

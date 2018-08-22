@@ -4118,7 +4118,7 @@ BlockSubmitDialogMorph.prototype.submitBlocks = function () {
             + '">'
             + str
             + '</blocks>';
-        ide.sbumitXMLAs(
+        ide.submitXMLAs(
             str
         );
     } else {

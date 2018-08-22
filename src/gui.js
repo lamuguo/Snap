@@ -4632,29 +4632,30 @@ IDE_Morph.prototype.saveXMLAs = function(xml, fileName) {
     this.saveFileAs(xml, 'text/xml;chartset=utf-8', fileName);
 };
 
-IDE_Morph.prototype.sbumitXMLAs = function(xml) {
+IDE_Morph.prototype.submitXMLAs = function(xml) {
     // wrapper to saving XML files with a proper type tag.
     const aaae=this;
-    console.log(xml);
-                                var global_pid = GetQueryString("pid");
-                                var global_uid = GetQueryString("uid");
+    var global_pid = GetQueryString("pid");
+    console.log('global_pid = ' + global_pid + ', xml = ' + xml);
     this.request(
         'POST',
-        '/snap/getxml.php?uid='+global_uid+'&pid='+global_pid,
+        '/api/status',
         null,
         nop,
         null,
         true,
-        xml
+        JSON.stringify({"pid": global_pid, "language": 4, "code": xml.toString()})
 	);
-
 };
-function GetQueryString(name)
-                                {
-                                        var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
-                                        var r = window.location.search.substr(1).match(reg);
-                                        if (r!=null) return unescape(r[2]); return null;
-                                }
+
+function GetQueryString(name) {
+    var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+    var r = window.location.search.substr(1).match(reg);
+    if (r!=null) {
+        return unescape(r[2]);
+    }
+    return null;
+}
 
 IDE_Morph.prototype.request = function (
     method,
@@ -4665,16 +4666,13 @@ IDE_Morph.prototype.request = function (
     wantsRawResponse,
     body) {
 
-    var request = new XMLHttpRequest(),
-        myself = this;
+    var myself = this;
 
     try {
-        request.open(
-            method,
-            'http://10.19.138.111' + path,
-            true
-        );
-        request.setRequestHeader("Content-Type", "text/xml");
+        console.log('method = %s, \n\npath = %s, \n\nbody = %s', method, path, body);
+        var request = new XMLHttpRequest()
+        request.open(method, path, true);
+        request.setRequestHeader("Content-Type", "application/json");
         request.withCredentials = false;
         request.onreadystatechange = function () {
             if (request.readyState === 4) {
