@@ -2,9 +2,10 @@
 <html>
   <head>
     <script type="text/javascript">
-    if (window.location) {
-      window.location = 'snap.html' + window.location.hash;
-    }
+        if (window.location) {
+            newLoc = window.location.href.replace(/(.*\/).*(\?.*)/g, '$1snap.html$2');
+            window.location.replace(newLoc)
+        }
     </script> 
     <meta HTTP-EQUIV="REFRESH" content="0.1; url=snap.html">
     <title>Redirecting to Snap!</title> 
