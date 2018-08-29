@@ -45,16 +45,14 @@
 					var r = window.location.search.substr(1).match(reg);
 					if (r!=null) return unescape(r[2]); return null;
 				}
-
-                var tempVersion = GetQueryString("xml");
-                var global_pid = GetQueryString("pid");
-                var global_uid = GetQueryString("uid");
-
+				var sid = GetQueryString("sid");
         		loop();
-        		if (tempVersion !== null) {
-                    $.get("../../snap/data/"+tempVersion+".xml",
+        		if (sid !== null && sid!== '') {
+                    $.get("http://10.19.138.111:8081/api/status/"+sid+"?sid="+sid,
+                     // $.get("http://10.19.138.111/testapi.php",
                         function(data,status){
-                            var objFile=new File([data],'temp.xml',{type: "text/plain"});;
+                        	data=JSON.parse(data);
+                            var objFile=new File([data.solution.code],'temp.xml',{type: "text/plain"});;
                             world.hand.processDrop({target:{files:[objFile]}});
                         },
                         "text");
