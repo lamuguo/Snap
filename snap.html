@@ -48,7 +48,7 @@
 				var sid = GetQueryString("sid");
         		loop();
         		if (sid !== null && sid!== '') {
-                    $.get("http://10.19.138.111:8081/api/status/"+sid+"?sid="+sid,
+                    $.get("../api/status/"+sid+"?sid="+sid,
                      // $.get("http://10.19.138.111/testapi.php",
                         function(data,status){
                         	data=JSON.parse(data);
