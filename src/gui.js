@@ -3165,6 +3165,19 @@ IDE_Morph.prototype.projectMenu = function () {
         shiftClicked ? new Color(100, 0, 0) : null
     );
 
+    menu.addItem(
+        'Submit project...',
+        function () {
+            if (myself.projectName) {
+                myself.submitProjectNoMedia(myself.projectName);
+            } else {
+                myself.prompt('Export Project As...', function (name) {
+                    myself.submitProjectNoMedia(name);
+                }, null, 'exportProject');
+            }
+        }
+    );
+
     if (this.stage.globalBlocks.length) {
         menu.addItem(
             'Export blocks...',
@@ -3177,15 +3190,6 @@ IDE_Morph.prototype.projectMenu = function () {
             function () {myself.removeUnusedBlocks(); },
             'find unused global custom blocks' +
                 '\nand remove their definitions'
-        );
-    }
-
-    if (this.stage.globalBlocks.length) {
-        menu.addItem(
-            'Submit blocks...',
-            function () {myself.submitGlobalBlocks(); },
-            'show global custom block definitions as XML' +
-                '\nin a new browser window'
         );
     }
 
@@ -3877,6 +3881,34 @@ IDE_Morph.prototype.exportProject = function (name, plain) {
             }
         }
     }
+};
+
+IDE_Morph.prototype.submitProjectNoMedia = function (name) {
+    var menu, str;
+    this.serializer.isCollectingMedia = true;
+    if (name) {
+        this.setProjectName(name);
+        if (Process.prototype.isCatchingErrors) {
+            try {
+                menu = this.showMessage('Exporting');
+                str = this.serializer.serialize(this.stage);
+                this.submitXMLAs(str);
+                menu.destroy();
+                this.showMessage('Exported!', 1);
+            } catch (err) {
+                this.serializer.isCollectingMedia = false;
+                this.showMessage('Export failed: ' + err);
+            }
+        } else {
+            menu = this.showMessage('Exporting');
+            str = this.serializer.serialize(this.stage);
+            this.saveXMLAs(str, this.projectName);
+            menu.destroy();
+            this.showMessage('Exported!', 1);
+        }
+    }
+    this.serializer.isCollectingMedia = false;
+    this.serializer.flushMedia();
 };
 
 IDE_Morph.prototype.exportGlobalBlocks = function () {
@@ -4634,7 +4666,6 @@ IDE_Morph.prototype.saveXMLAs = function(xml, fileName) {
 
 IDE_Morph.prototype.submitXMLAs = function(xml) {
     // wrapper to saving XML files with a proper type tag.
-    const aaae=this;
     var global_pid = GetQueryString("pid");
     console.log('global_pid = ' + global_pid + ', xml = ' + xml);
     this.request(
