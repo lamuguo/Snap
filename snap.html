@@ -1,70 +1,105 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Snap! Build Your Own Blocks 4.2.2</title>
-        <link rel="shortcut icon" href="src/favicon.ico">
-        <script type="text/javascript" src="src/morphic.js?version=2018-10-02"></script>
-        <script type="text/javascript" src="src/widgets.js?version=2018-10-02"></script>
-        <script type="text/javascript" src="src/blocks.js?version=2018-10-02"></script>
-        <script type="text/javascript" src="src/threads.js?version=2018-10-03"></script>
-        <script type="text/javascript" src="src/objects.js?version=2018-10-05"></script>
-        <script type="text/javascript" src="src/gui.js?version=2018-10-07"></script>
-        <script type="text/javascript" src="src/paint.js?version=2018-10-02"></script>
-        <script type="text/javascript" src="src/lists.js?version=2018-10-02"></script>
-        <script type="text/javascript" src="src/byob.js?version=2018-10-02"></script>
-        <script type="text/javascript" src="src/tables.js?version=2018-10-02"></script>
-        <script type="text/javascript" src="src/symbols.js?version=2018-10-02"></script>
-        <script type="text/javascript" src="src/sketch.js?version=2018-10-02"></script>
-        <script type="text/javascript" src="src/xml.js?version=2018-10-02"></script>
-        <script type="text/javascript" src="src/store.js?version=2018-10-05"></script>
-        <script type="text/javascript" src="src/locale.js?version=2018-10-02"></script>
-        <script type="text/javascript" src="src/cloud.js?version=2018-10-04"></script>
-        <script type="text/javascript" src="src/sha512.js?version=2018-10-02"></script>
-        <script type="text/javascript" src="src/FileSaver.min.js?version=2018-10-02"></script>
-		<script type="text/javascript" src="jquery-3.3.1.min.js?version=2018-06-21"></script>
-        <script type="text/javascript">
-            var world;
-            window.onload = function () {
-                world = new WorldMorph(document.getElementById('world'));
-                world.worldCanvas.focus();
-				new IDE_Morph().openIn(world);
-				let testf= {
-					target : {
-						files: '1533106060.xml'
-					},
-					dataTransfer : {
-						files: '1533106060.xml',
-						URL: 'http://10.19.138.111/snap/data/1533106060.xml'
-					}
-				}
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Snap! Build Your Own Blocks 4.2.2</title>
+  <link rel="shortcut icon" href="src/favicon.ico">
+  <script type="text/javascript" src="src/morphic.js?version=2018-10-02"></script>
+  <script type="text/javascript" src="src/widgets.js?version=2018-10-02"></script>
+  <script type="text/javascript" src="src/blocks.js?version=2018-10-02"></script>
+  <script type="text/javascript" src="src/threads.js?version=2018-10-03"></script>
+  <script type="text/javascript" src="src/objects.js?version=2018-10-05"></script>
+  <script type="text/javascript" src="src/gui.js?version=2018-10-07"></script>
+  <script type="text/javascript" src="src/paint.js?version=2018-10-02"></script>
+  <script type="text/javascript" src="src/lists.js?version=2018-10-02"></script>
+  <script type="text/javascript" src="src/byob.js?version=2018-10-02"></script>
+  <script type="text/javascript" src="src/tables.js?version=2018-10-02"></script>
+  <script type="text/javascript" src="src/symbols.js?version=2018-10-02"></script>
+  <script type="text/javascript" src="src/sketch.js?version=2018-10-02"></script>
+  <script type="text/javascript" src="src/xml.js?version=2018-10-02"></script>
+  <script type="text/javascript" src="src/store.js?version=2018-10-05"></script>
+  <script type="text/javascript" src="src/locale.js?version=2018-10-02"></script>
+  <script type="text/javascript" src="src/cloud.js?version=2018-10-04"></script>
+  <script type="text/javascript" src="src/sha512.js?version=2018-10-02"></script>
+  <script type="text/javascript" src="src/FileSaver.min.js?version=2018-10-02"></script>
+  <script type="text/javascript" src="jquery-3.3.1.min.js?version=2018-06-21"></script>
 
-				function GetQueryString(name)
-				{
-					var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
-					var r = window.location.search.substr(1).match(reg);
-					if (r!=null) return unescape(r[2]); return null;
-				}
-				var sid = GetQueryString("sid");
-        		loop();
-        		if (sid !== null && sid!== '') {
-                    $.get("../api/status/"+sid+"?sid="+sid,
-                     // $.get("http://10.19.138.111/testapi.php",
-                        function(data,status){
-                        	data=JSON.parse(data);
-                            var objFile=new File([data.solution.code],'temp.xml',{type: "text/plain"});;
-                            world.hand.processDrop({target:{files:[objFile]}});
-                        },
-                        "text");
-				}
-			};
-            function loop() {
-                requestAnimationFrame(loop);
-                world.doOneCycle();
-            }
-        </script>
-    </head>
-    <body style="margin: 0;">
-        <canvas id="world" tabindex="1" style="position: absolute;" />
-    </body>
+  <script type="text/javascript">
+    var world;
+    window.onload = function () {
+      world = new WorldMorph(document.getElementById('world'));
+      world.worldCanvas.focus();
+      new IDE_Morph().openIn(world);
+      let testf = {
+        target: {
+          files: '1533106060.xml'
+        },
+        dataTransfer: {
+          files: '1533106060.xml',
+          URL: 'http://10.19.138.111/snap/data/1533106060.xml'
+        }
+      }
+
+      function GetQueryString(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]);
+        return '';
+      }
+
+      function GetLatestSolutionOfUser(pid, uid) {
+        data = $.ajax({
+          url: '../api/status/list?pid=' + pid + '&uid=' + uid,
+          type: 'GET',
+          async: false,
+          cache: false,
+          datatype: 'json'
+        }).responseText
+
+        data = JSON.parse(data)
+        console.log('data = ', data)
+        console.log('data.list = ', data.list)
+        console.log('data.list.docs = ', data.list.docs)
+        if (data === null || data.list === null || data.list.docs === null || data.list.docs.length == 0) {
+          return ''
+        }
+        return data.list.docs[0].sid
+      }
+
+      function loadXml(world, code) {
+        var objFile = new File([code], 'temp.xml', {type: "text/plain"});
+        ;
+        world.hand.processDrop({target: {files: [objFile]}});
+      }
+
+      loop();
+
+      var sid = GetQueryString("sid");
+      var pid = GetQueryString('pid');
+      var uid = GetQueryString('uid');
+      if (sid === '') {
+        sid = GetLatestSolutionOfUser(pid, uid)
+      }
+
+      if (sid === '') {
+        // Don't have solution, use problem.code
+        $.get('../api/problem/' + pid, function (data) {
+          loadXml(world, data.problem.code)
+        }, 'json')
+      } else {
+        $.get('../api/status/' + sid, function (data) {
+          loadXml(world, data.solution.code)
+        }, 'json')
+      }
+    };
+
+    function loop() {
+      requestAnimationFrame(loop);
+      world.doOneCycle();
+    }
+  </script>
+</head>
+<body style="margin: 0;">
+<canvas id="world" tabindex="1" style="position: absolute;"/>
+</body>
 </html>
