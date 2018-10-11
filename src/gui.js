@@ -3169,13 +3169,15 @@ IDE_Morph.prototype.projectMenu = function () {
         'Submit project...',
         function () {
             if (myself.projectName) {
-                myself.submitProjectNoMedia(myself.projectName);
+                myself.submitProjectWithMedia(myself.projectName);
             } else {
-                myself.prompt('Export Project As...', function (name) {
-                    myself.submitProjectNoMedia(name);
-                }, null, 'exportProject');
+                myself.prompt('Submit Project As...', function (name) {
+                    myself.submitProjectWithMedia(name);
+                }, null, 'submitProject');
             }
-        }
+        },
+        'Submit project to backend',
+        null
     );
 
     if (this.stage.globalBlocks.length) {
@@ -3883,32 +3885,24 @@ IDE_Morph.prototype.exportProject = function (name, plain) {
     }
 };
 
-IDE_Morph.prototype.submitProjectNoMedia = function (name) {
+IDE_Morph.prototype.submitProjectWithMedia = function (name) {
     var menu, str;
-    this.serializer.isCollectingMedia = true;
     if (name) {
         this.setProjectName(name);
+      try {
+        menu = this.showMessage('Submitting');
+        str = this.serializer.serialize(this.stage);
+        this.submitXMLAs(str);
+        menu.destroy();
+        this.showMessage('Submitted!', 1);
+      } catch (err) {
         if (Process.prototype.isCatchingErrors) {
-            try {
-                menu = this.showMessage('Exporting');
-                str = this.serializer.serialize(this.stage);
-                this.submitXMLAs(str);
-                menu.destroy();
-                this.showMessage('Exported!', 1);
-            } catch (err) {
-                this.serializer.isCollectingMedia = false;
-                this.showMessage('Export failed: ' + err);
-            }
+          this.showMessage('Submit failed: ' + err);
         } else {
-            menu = this.showMessage('Exporting');
-            str = this.serializer.serialize(this.stage);
-            this.saveXMLAs(str, this.projectName);
-            menu.destroy();
-            this.showMessage('Exported!', 1);
+          throw err;
         }
+      }
     }
-    this.serializer.isCollectingMedia = false;
-    this.serializer.flushMedia();
 };
 
 IDE_Morph.prototype.exportGlobalBlocks = function () {
