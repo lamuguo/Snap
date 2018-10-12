@@ -29,7 +29,9 @@
     window.onload = function () {
       world = new WorldMorph(document.getElementById('world'));
       world.worldCanvas.focus();
-      new IDE_Morph().openIn(world);
+      ideMorph = new IDE_Morph();
+      ideMorph.openIn(world);
+      ideMorph.setBlocksScale(1.5);
       let testf = {
         target: {
           files: '1533106060.xml'
