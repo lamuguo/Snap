@@ -610,9 +610,9 @@ IDE_Morph.prototype.createControlBar = function () {
         projectButton,
         settingsButton,
         stageSizeButton,
+        submitButton,
         appModeButton,
         steppingButton,
-        cloudButton,
         x,
         colors = [
             this.groupColor,
@@ -820,6 +820,28 @@ IDE_Morph.prototype.createControlBar = function () {
     this.controlBar.add(startButton);
     this.controlBar.startButton = startButton;
 
+    // submitButton
+    button = new PushButtonMorph(
+        this,
+        'pressStart',  // TODO(xfguo): Change
+        'submit'
+    );
+    button.corner = 12;
+    button.color = colors[0];
+    button.highlightColor = colors[1];
+    button.pressColor = colors[2];
+    button.labelMinExtent = new Point(36, 18);
+    button.padding = 0;
+    button.labelShadowOffset = new Point(-1, -1);
+    button.labelShadowColor = colors[1];
+    button.labelColor = new Color(0, 200, 0);
+    button.contrast = this.buttonContrast;
+    button.drawNew();
+    button.fixLayout();
+    submitButton = button;
+    this.controlBar.add(submitButton);
+    this.controlBar.submitButton = submitButton;
+
     // steppingSlider
     slider = new SliderMorph(
         61,
@@ -887,29 +909,6 @@ IDE_Morph.prototype.createControlBar = function () {
     this.controlBar.add(settingsButton);
     this.controlBar.settingsButton = settingsButton; // for menu positioning
 
-    // cloudButton
-    button = new PushButtonMorph(
-        this,
-        'cloudMenu',
-        new SymbolMorph('cloud', 11)
-    );
-    button.corner = 12;
-    button.color = colors[0];
-    button.highlightColor = colors[1];
-    button.pressColor = colors[2];
-    button.labelMinExtent = new Point(36, 18);
-    button.padding = 0;
-    button.labelShadowOffset = new Point(-1, -1);
-    button.labelShadowColor = colors[1];
-    button.labelColor = this.buttonLabelColor;
-    button.contrast = this.buttonContrast;
-    button.drawNew();
-    // button.hint = 'cloud operations';
-    button.fixLayout();
-    cloudButton = button;
-    this.controlBar.add(cloudButton);
-    this.controlBar.cloudButton = cloudButton; // for menu positioning
-
     this.controlBar.fixLayout = function () {
         x = this.right() - padding;
         [stopButton, pauseButton, startButton].forEach(
@@ -941,14 +940,14 @@ IDE_Morph.prototype.createControlBar = function () {
         steppingButton.setCenter(myself.controlBar.center());
         steppingButton.setRight(slider.left() - padding);
 
-        settingsButton.setCenter(myself.controlBar.center());
-        settingsButton.setLeft(this.left());
+        submitButton.setCenter(myself.controlBar.center());
+        submitButton.setLeft(this.left());
 
-        cloudButton.setCenter(myself.controlBar.center());
-        cloudButton.setRight(settingsButton.left() - padding);
+        settingsButton.setCenter(myself.controlBar.center());
+        settingsButton.setRight(submitButton.left() - padding);
 
         projectButton.setCenter(myself.controlBar.center());
-        projectButton.setRight(cloudButton.left() - padding);
+        projectButton.setRight(settingsButton.left() - padding);
 
         this.refreshSlider();
         this.updateLabel();
@@ -1010,7 +1009,7 @@ IDE_Morph.prototype.createControlBar = function () {
         this.label.drawNew();
         this.add(this.label);
         this.label.setCenter(this.center());
-        this.label.setLeft(this.settingsButton.right() + padding);
+        this.label.setLeft(this.submitButton.right() + padding);
     };
 };
 
@@ -2537,148 +2536,6 @@ IDE_Morph.prototype.snapMenu = function () {
         );
     }
     menu.popup(world, this.logo.bottomLeft());
-};
-
-IDE_Morph.prototype.cloudMenu = function () {
-    var menu,
-        myself = this,
-        world = this.world(),
-        pos = this.controlBar.cloudButton.bottomLeft(),
-        shiftClicked = (world.currentKey === 16);
-
-    if (location.protocol === 'file:' && !shiftClicked) {
-        this.showMessage('cloud unavailable without a web server.');
-        return;
-    }
-
-    menu = new MenuMorph(this);
-    if (shiftClicked) {
-        menu.addItem(
-            'url...',
-            'setCloudURL',
-            null,
-            new Color(100, 0, 0)
-        );
-        menu.addLine();
-    }
-    if (!this.cloud.username) {
-        menu.addItem(
-            'Login...',
-            'initializeCloud'
-        );
-        menu.addItem(
-            'Signup...',
-            'createCloudAccount'
-        );
-        menu.addItem(
-            'Reset Password...',
-            'resetCloudPassword'
-        );
-        menu.addItem(
-            'Resend Verification Email...',
-            'resendVerification'
-        );
-    } else {
-        menu.addItem(
-            localize('Logout') + ' ' + this.cloud.username,
-            'logout'
-        );
-        menu.addItem(
-            'Change Password...',
-            'changeCloudPassword'
-        );
-    }
-    if (shiftClicked) {
-        menu.addLine();
-        menu.addItem(
-            'export project media only...',
-            function () {
-                if (myself.projectName) {
-                    myself.exportProjectMedia(myself.projectName);
-                } else {
-                    myself.prompt('Export Project As...', function (name) {
-                        myself.exportProjectMedia(name);
-                    }, null, 'exportProject');
-                }
-            },
-            null,
-            this.hasChangedMedia ? new Color(100, 0, 0) : new Color(0, 100, 0)
-        );
-        menu.addItem(
-            'export project without media...',
-            function () {
-                if (myself.projectName) {
-                    myself.exportProjectNoMedia(myself.projectName);
-                } else {
-                    myself.prompt('Export Project As...', function (name) {
-                        myself.exportProjectNoMedia(name);
-                    }, null, 'exportProject');
-                }
-            },
-            null,
-            new Color(100, 0, 0)
-        );
-        menu.addItem(
-            'export project as cloud data...',
-            function () {
-                if (myself.projectName) {
-                    myself.exportProjectAsCloudData(myself.projectName);
-                } else {
-                    myself.prompt('Export Project As...', function (name) {
-                        myself.exportProjectAsCloudData(name);
-                    }, null, 'exportProject');
-                }
-            },
-            null,
-            new Color(100, 0, 0)
-        );
-        menu.addLine();
-        menu.addItem(
-            'open shared project from cloud...',
-            function () {
-                myself.prompt('Author name…', function (usr) {
-                    myself.prompt('Project name...', function (prj) {
-                        myself.showMessage(
-                            'Fetching project\nfrom the cloud...'
-                        );
-                        myself.cloud.getPublicProject(
-                            prj,
-                            usr.toLowerCase(),
-                            function (projectData) {
-                                var msg;
-                                if (!Process.prototype.isCatchingErrors) {
-                                    window.open(
-                                        'data:text/xml,' + projectData
-                                    );
-                                }
-                                myself.nextSteps([
-                                    function () {
-                                        msg = myself.showMessage(
-                                            'Opening project...'
-                                        );
-                                    },
-                                    function () {nop(); }, // yield (Chrome)
-                                    function () {
-                                        myself.rawOpenCloudDataString(
-                                            projectData
-                                        );
-                                    },
-                                    function () {
-                                        msg.destroy();
-                                    }
-                                ]);
-                            },
-                            myself.cloudError()
-                        );
-
-                    }, null, 'project');
-                }, null, 'project');
-            },
-            null,
-            new Color(100, 0, 0)
-        );
-    }
-    menu.popup(world, pos);
 };
 
 IDE_Morph.prototype.settingsMenu = function () {
@@ -4950,7 +4807,6 @@ IDE_Morph.prototype.toggleAppMode = function (appMode) {
     var world = this.world(),
         elements = [
             this.logo,
-            this.controlBar.cloudButton,
             this.controlBar.projectButton,
             this.controlBar.settingsButton,
             this.controlBar.steppingButton,
