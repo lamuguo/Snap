@@ -129,13 +129,8 @@ SpriteMorph.prototype.attributes =
 
 SpriteMorph.prototype.categories =
     [
-        'motion',
         'control',
-        'looks',
-        'sensing',
-        'sound',
         'operators',
-        'pen',
         'variables',
         'lists',
         'other'
@@ -1782,16 +1777,6 @@ SpriteMorph.prototype.isLimitedBlock = function (selector) {
         && SpriteMorph.prototype.limitedFuncBlocks[selector]);
 }
 
-SpriteMorph.prototype.block = function (selector, isGhosted) {
-    if (StageMorph.prototype.hiddenPrimitives[selector] || this.isLimitedBlock(selector)) {
-        return null;
-    }
-    var newBlock = SpriteMorph.prototype.blockForSelector(selector, true);
-    newBlock.isTemplate = true;
-    if (isGhosted) {newBlock.ghost(); }
-    return newBlock;
-}
-
 // SpriteMorph block templates
 
 SpriteMorph.prototype.blockTemplates = function (category) {
@@ -1882,7 +1867,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
 
     if (cat === 'motion') {
 
-        blocks.push(this.block('forward'));
+        blocks.push(block('forward'));
         blocks.push(block('turn'));
         blocks.push(block('turnLeft'));
         blocks.push('-');

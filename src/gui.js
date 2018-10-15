@@ -202,11 +202,11 @@ IDE_Morph.prototype.setDefaultDesign();
 
 // IDE_Morph instance creation:
 
-function IDE_Morph(isLimitedFunctionalityMode, isAutoFill) {
-    this.init(isLimitedFunctionalityMode, isAutoFill);
+function IDE_Morph(isAutoFill) {
+    this.init(isAutoFill);
 }
 
-IDE_Morph.prototype.init = function (isLimitedFunctionalityMode, isAutoFill) {
+IDE_Morph.prototype.init = function (isAutoFill) {
     // global font setting
     MorphicPreferences.globalFontFamily = 'Helvetica, Arial';
 
@@ -224,7 +224,7 @@ IDE_Morph.prototype.init = function (isLimitedFunctionalityMode, isAutoFill) {
     this.globalVariables = new VariableFrame();
     this.currentSprite = new SpriteMorph(this.globalVariables);
     this.sprites = new List([this.currentSprite]);
-    this.currentCategory = 'motion';
+    this.currentCategory = 'control';
     this.currentTab = 'scripts';
     this.projectName = '';
     this.projectNotes = '';
@@ -246,7 +246,6 @@ IDE_Morph.prototype.init = function (isLimitedFunctionalityMode, isAutoFill) {
     this.embedOverlay = null;
     this.isEmbedMode = false;
 
-    this.isLimitedFunctionalityMode = isLimitedFunctionalityMode || false;
     this.isAutoFill = isAutoFill === undefined ? true : isAutoFill;
     this.isAppMode = false;
     this.isSmallStage = false;
@@ -611,7 +610,6 @@ IDE_Morph.prototype.createControlBar = function () {
         projectButton,
         settingsButton,
         stageSizeButton,
-        limitFunctionButton,
         submitButton,
         appModeButton,
         steppingButton,
@@ -841,37 +839,6 @@ IDE_Morph.prototype.createControlBar = function () {
     this.controlBar.add(slider);
     this.controlBar.steppingSlider = slider;
 
-    // limitFunctionButton
-    button = new ToggleButtonMorph(
-        null, //colors,
-        this, // the IDE is the target
-        'toggleLimitedFunctionalityMode',
-        [' limited functionalities ', ' full functionalities '],
-        function () {  // query
-            return !this.isLimitedFunctionalityMode;
-        },
-        null,
-        'Enable/Disable limited functionalities'
-    );
-
-    button.corner = 12;
-    button.color = colors[0];
-    button.highlightColor = colors[1];
-    button.pressColor = colors[2];
-    button.labelMinExtent = new Point(36, 18);
-    button.padding = 0;
-    button.labelShadowOffset = new Point(-1, -1);
-    button.labelShadowColor = colors[1];
-    button.labelColor = new Color(255, 220, 0);
-    button.contrast = this.buttonContrast;
-    button.drawNew();
-    // button.hint = 'pause/resume\nall scripts';
-    button.fixLayout();
-    button.refresh();
-    limitFunctionButton = button;
-    this.controlBar.add(limitFunctionButton);
-    this.controlBar.pauseButton = limitFunctionButton; // for refreshing
-
     // submitButton
     button = new PushButtonMorph(
         this,
@@ -973,11 +940,8 @@ IDE_Morph.prototype.createControlBar = function () {
         steppingButton.setCenter(myself.controlBar.center());
         steppingButton.setRight(slider.left() - padding);
 
-        limitFunctionButton.setCenter(myself.controlBar.center());
-        limitFunctionButton.setRight(steppingButton.left() - padding);
-
         submitButton.setCenter(myself.controlBar.center());
-        submitButton.setRight(limitFunctionButton.left() - padding);
+        submitButton.setRight(steppingButton.left() - padding);
 
         settingsButton.setCenter(myself.controlBar.center());
         settingsButton.setLeft(this.left());
@@ -1124,10 +1088,9 @@ IDE_Morph.prototype.createCategories = function () {
             ));
         });
 
+        let r = Math.max(rows, 4)
         myself.categories.setHeight(
-            (rows + 1) * yPadding
-                + rows * buttonHeight
-                + 2 * border
+            (r + 1) * yPadding + r * buttonHeight + 2 * border
         );
     }
 
@@ -2124,13 +2087,6 @@ IDE_Morph.prototype.togglePauseResume = function () {
     }
     this.controlBar.pauseButton.refresh();
 };
-
-IDE_Morph.prototype.toggleLimitedFunctionalityMode = function(newValue) {
-    this.isLimitedFunctionalityMode = newValue || !this.isLimitedFunctionalityMode;
-    console.log('toggleLimitedFunctionalityMode(', newValue, ', ) => ', this.isLimitedFunctionalityMode);
-    this.flushBlocksCache(this.currentCategory);
-    this.refreshPalette();
-}
 
 IDE_Morph.prototype.isPaused = function () {
     if (!this.stage) {return false; }
