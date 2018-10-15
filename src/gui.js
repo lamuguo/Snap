@@ -202,11 +202,11 @@ IDE_Morph.prototype.setDefaultDesign();
 
 // IDE_Morph instance creation:
 
-function IDE_Morph(isAutoFill) {
-    this.init(isAutoFill);
+function IDE_Morph(isLimitedFunctionalityMode, isAutoFill) {
+    this.init(isLimitedFunctionalityMode, isAutoFill);
 }
 
-IDE_Morph.prototype.init = function (isAutoFill) {
+IDE_Morph.prototype.init = function (isLimitedFunctionalityMode, isAutoFill) {
     // global font setting
     MorphicPreferences.globalFontFamily = 'Helvetica, Arial';
 
@@ -246,6 +246,7 @@ IDE_Morph.prototype.init = function (isAutoFill) {
     this.embedOverlay = null;
     this.isEmbedMode = false;
 
+    this.isLimitedFunctionalityMode = isLimitedFunctionalityMode || false;
     this.isAutoFill = isAutoFill === undefined ? true : isAutoFill;
     this.isAppMode = false;
     this.isSmallStage = false;
@@ -610,6 +611,7 @@ IDE_Morph.prototype.createControlBar = function () {
         projectButton,
         settingsButton,
         stageSizeButton,
+        limitFunctionButton,
         submitButton,
         appModeButton,
         steppingButton,
@@ -820,28 +822,6 @@ IDE_Morph.prototype.createControlBar = function () {
     this.controlBar.add(startButton);
     this.controlBar.startButton = startButton;
 
-    // submitButton
-    button = new PushButtonMorph(
-        this,
-        'pressStart',  // TODO(xfguo): Change
-        'submit'
-    );
-    button.corner = 12;
-    button.color = colors[0];
-    button.highlightColor = colors[1];
-    button.pressColor = colors[2];
-    button.labelMinExtent = new Point(36, 18);
-    button.padding = 0;
-    button.labelShadowOffset = new Point(-1, -1);
-    button.labelShadowColor = colors[1];
-    button.labelColor = new Color(0, 200, 0);
-    button.contrast = this.buttonContrast;
-    button.drawNew();
-    button.fixLayout();
-    submitButton = button;
-    this.controlBar.add(submitButton);
-    this.controlBar.submitButton = submitButton;
-
     // steppingSlider
     slider = new SliderMorph(
         61,
@@ -860,6 +840,59 @@ IDE_Morph.prototype.createControlBar = function () {
     slider.setExtent(new Point(50, 14));
     this.controlBar.add(slider);
     this.controlBar.steppingSlider = slider;
+
+    // limitFunctionButton
+    button = new ToggleButtonMorph(
+        null, //colors,
+        this, // the IDE is the target
+        'toggleLimitedFunctionalityMode',
+        [' limited functionalities ', ' full functionalities '],
+        function () {  // query
+            return !this.isLimitedFunctionalityMode;
+        },
+        null,
+        'Enable/Disable limited functionalities'
+    );
+
+    button.corner = 12;
+    button.color = colors[0];
+    button.highlightColor = colors[1];
+    button.pressColor = colors[2];
+    button.labelMinExtent = new Point(36, 18);
+    button.padding = 0;
+    button.labelShadowOffset = new Point(-1, -1);
+    button.labelShadowColor = colors[1];
+    button.labelColor = new Color(255, 220, 0);
+    button.contrast = this.buttonContrast;
+    button.drawNew();
+    // button.hint = 'pause/resume\nall scripts';
+    button.fixLayout();
+    button.refresh();
+    limitFunctionButton = button;
+    this.controlBar.add(limitFunctionButton);
+    this.controlBar.pauseButton = limitFunctionButton; // for refreshing
+
+    // submitButton
+    button = new PushButtonMorph(
+        this,
+        'pressSubmitResult',
+        ' submit result '
+    );
+    button.corner = 12;
+    button.color = colors[0];
+    button.highlightColor = colors[1];
+    button.pressColor = colors[2];
+    button.labelMinExtent = new Point(36, 18);
+    button.padding = 0;
+    button.labelShadowOffset = new Point(-1, -1);
+    button.labelShadowColor = colors[1];
+    button.labelColor = new Color(0, 200, 0);
+    button.contrast = this.buttonContrast;
+    button.drawNew();
+    button.fixLayout();
+    submitButton = button;
+    this.controlBar.add(submitButton);
+    this.controlBar.submitButton = submitButton;
 
     // projectButton
     button = new PushButtonMorph(
@@ -940,11 +973,14 @@ IDE_Morph.prototype.createControlBar = function () {
         steppingButton.setCenter(myself.controlBar.center());
         steppingButton.setRight(slider.left() - padding);
 
+        limitFunctionButton.setCenter(myself.controlBar.center());
+        limitFunctionButton.setRight(steppingButton.left() - padding);
+
         submitButton.setCenter(myself.controlBar.center());
-        submitButton.setLeft(this.left());
+        submitButton.setRight(limitFunctionButton.left() - padding);
 
         settingsButton.setCenter(myself.controlBar.center());
-        settingsButton.setRight(submitButton.left() - padding);
+        settingsButton.setLeft(this.left());
 
         projectButton.setCenter(myself.controlBar.center());
         projectButton.setRight(settingsButton.left() - padding);
@@ -985,8 +1021,7 @@ IDE_Morph.prototype.createControlBar = function () {
     };
 
     this.controlBar.updateLabel = function () {
-        var suffix = myself.world().isDevMode ?
-                ' - ' + localize('development mode') : '';
+        var suffix = this.world().isDevMode ? ' - ' + localize('development mode') : '';
 
         if (this.label) {
             this.label.destroy();
@@ -1009,7 +1044,7 @@ IDE_Morph.prototype.createControlBar = function () {
         this.label.drawNew();
         this.add(this.label);
         this.label.setCenter(this.center());
-        this.label.setLeft(this.submitButton.right() + padding);
+        this.label.setLeft(this.settingsButton.right() + padding);
     };
 };
 
@@ -2090,6 +2125,13 @@ IDE_Morph.prototype.togglePauseResume = function () {
     this.controlBar.pauseButton.refresh();
 };
 
+IDE_Morph.prototype.toggleLimitedFunctionalityMode = function(newValue) {
+    this.isLimitedFunctionalityMode = newValue || !this.isLimitedFunctionalityMode;
+    console.log('toggleLimitedFunctionalityMode(', newValue, ', ) => ', this.isLimitedFunctionalityMode);
+    this.flushBlocksCache(this.currentCategory);
+    this.refreshPalette();
+}
+
 IDE_Morph.prototype.isPaused = function () {
     if (!this.stage) {return false; }
     return this.stage.threads.isPaused();
@@ -3022,21 +3064,6 @@ IDE_Morph.prototype.projectMenu = function () {
         shiftClicked ? new Color(100, 0, 0) : null
     );
 
-    menu.addItem(
-        'Submit project...',
-        function () {
-            if (myself.projectName) {
-                myself.submitProjectWithMedia(myself.projectName);
-            } else {
-                myself.prompt('Submit Project As...', function (name) {
-                    myself.submitProjectWithMedia(name);
-                }, null, 'submitProject');
-            }
-        },
-        'Submit project to backend',
-        null
-    );
-
     if (this.stage.globalBlocks.length) {
         menu.addItem(
             'Export blocks...',
@@ -3740,6 +3767,11 @@ IDE_Morph.prototype.exportProject = function (name, plain) {
             }
         }
     }
+};
+
+IDE_Morph.prototype.pressSubmitResult = function () {
+    console.log('Submit result button is pressed');
+    this.submitProjectWithMedia(this.projectName || 'untitled');
 };
 
 IDE_Morph.prototype.submitProjectWithMedia = function (name) {

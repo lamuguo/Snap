@@ -173,6 +173,7 @@ SpriteMorph.prototype.bubbleCorner = 10;
 SpriteMorph.prototype.bubbleBorder = 3;
 SpriteMorph.prototype.bubbleBorderColor = new Color(190, 190, 190);
 SpriteMorph.prototype.bubbleMaxTextWidth = 130;
+SpriteMorph.prototype.limitedFuncBlocks = {};
 
 SpriteMorph.prototype.initBlocks = function () {
     SpriteMorph.prototype.blocks = {
@@ -1434,6 +1435,12 @@ SpriteMorph.prototype.init = function (globals) {
         'brightness': 0
     };
 
+    [
+        'forward', 'turn', 'turnLeft'
+    ].forEach(function(name) {
+        SpriteMorph.prototype.limitedFuncBlocks[name] = true;
+    });
+
     // sprite inheritance
     this.exemplar = null;
     this.instances = [];
@@ -1766,6 +1773,25 @@ SpriteMorph.prototype.variableBlock = function (varName, isLocalTemplate) {
     return block;
 };
 
+SpriteMorph.prototype.isLimitedBlock = function (selector) {
+    let ide = this.parentThatIsA(IDE_Morph);
+    if (ide === null) {
+        return false;
+    }
+    return (ide.isLimitedFunctionalityMode
+        && SpriteMorph.prototype.limitedFuncBlocks[selector]);
+}
+
+SpriteMorph.prototype.block = function (selector, isGhosted) {
+    if (StageMorph.prototype.hiddenPrimitives[selector] || this.isLimitedBlock(selector)) {
+        return null;
+    }
+    var newBlock = SpriteMorph.prototype.blockForSelector(selector, true);
+    newBlock.isTemplate = true;
+    if (isGhosted) {newBlock.ghost(); }
+    return newBlock;
+}
+
 // SpriteMorph block templates
 
 SpriteMorph.prototype.blockTemplates = function (category) {
@@ -1856,7 +1882,7 @@ SpriteMorph.prototype.blockTemplates = function (category) {
 
     if (cat === 'motion') {
 
-        blocks.push(block('forward'));
+        blocks.push(this.block('forward'));
         blocks.push(block('turn'));
         blocks.push(block('turnLeft'));
         blocks.push('-');
@@ -1975,7 +2001,6 @@ SpriteMorph.prototype.blockTemplates = function (category) {
 
     } else if (cat === 'control') {
 
-        blocks.push(block('receiveGo'));
         blocks.push(block('receiveKey'));
         blocks.push(block('receiveInteraction'));
         blocks.push(block('receiveCondition'));
