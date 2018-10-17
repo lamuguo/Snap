@@ -410,7 +410,7 @@ SpriteMorph.prototype.initBlocks = function () {
         log: {
             dev: true,
             type: 'command',
-            category: 'looks',
+            category: 'control',
             spec: 'console log %mult%s'
         },
 
@@ -1986,21 +1986,22 @@ SpriteMorph.prototype.blockTemplates = function (category) {
 
     } else if (cat === 'control') {
 
-        blocks.push(block('receiveKey'));
-        blocks.push(block('receiveInteraction'));
-        blocks.push(block('receiveCondition'));
-        blocks.push(block('receiveMessage'));
-        blocks.push('-');
-        blocks.push(block('doBroadcast'));
-        blocks.push(block('doBroadcastAndWait'));
-        blocks.push(watcherToggle('getLastMessage'));
-        blocks.push(block('getLastMessage'));
-        blocks.push('-');
-        blocks.push(block('doWarp'));
-        blocks.push('-');
-        blocks.push(block('doWait'));
-        blocks.push(block('doWaitUntil'));
-        blocks.push('-');
+        // blocks.push(block('receiveGo'));
+        // blocks.push(block('receiveKey'));
+        // blocks.push(block('receiveInteraction'));
+        // blocks.push(block('receiveCondition'));
+        // blocks.push(block('receiveMessage'));
+        // blocks.push('-');
+        // blocks.push(block('doBroadcast'));
+        // blocks.push(block('doBroadcastAndWait'));
+        // blocks.push(watcherToggle('getLastMessage'));
+        // blocks.push(block('getLastMessage'));
+        // blocks.push('-');
+        // blocks.push(block('doWarp'));
+        // blocks.push('-');
+        // blocks.push(block('doWait'));
+        // blocks.push(block('doWaitUntil'));
+        // blocks.push('-');
         blocks.push(block('doForever'));
         blocks.push(block('doRepeat'));
         blocks.push(block('doUntil'));
@@ -2015,28 +2016,32 @@ SpriteMorph.prototype.blockTemplates = function (category) {
         blocks.push(block('doStop'));
         blocks.push(block('doStopAll'));
     */
-        blocks.push(block('doStopThis'));
+        // blocks.push(block('doStopThis'));
     /*
         // migrated to doStopThis, now redundant
         blocks.push(block('doStopOthers'));
     */
+        // blocks.push('-');
+        // blocks.push(block('doRun'));
+        // blocks.push(block('fork'));
+        // blocks.push(block('evaluate'));
+        // blocks.push('-');
+        // blocks.push(block('doTellTo'));
+        // blocks.push(block('reportAskFor'));
+        // blocks.push('-');
+        // blocks.push(block('doCallCC'));
+        // blocks.push(block('reportCallCC'));
+        // blocks.push('-');
+        // blocks.push(block('receiveOnClone'));
+        // blocks.push(block('createClone'));
+        // blocks.push(block('newClone'));
+        // blocks.push(block('removeClone'));
+        // blocks.push('-');
+        // blocks.push(block('doPauseAll'));
+
         blocks.push('-');
-        blocks.push(block('doRun'));
-        blocks.push(block('fork'));
-        blocks.push(block('evaluate'));
-        blocks.push('-');
-        blocks.push(block('doTellTo'));
-        blocks.push(block('reportAskFor'));
-        blocks.push('-');
-        blocks.push(block('doCallCC'));
-        blocks.push(block('reportCallCC'));
-        blocks.push('-');
-        blocks.push(block('receiveOnClone'));
-        blocks.push(block('createClone'));
-        blocks.push(block('newClone'));
-        blocks.push(block('removeClone'));
-        blocks.push('-');
-        blocks.push(block('doPauseAll'));
+        blocks.push(block('log'));
+
         blocks.push('=');
         blocks.push(this.makeBlockButton(cat));
 
@@ -2104,11 +2109,11 @@ SpriteMorph.prototype.blockTemplates = function (category) {
 
     } else if (cat === 'operators') {
 
-        blocks.push(block('reifyScript'));
-        blocks.push(block('reifyReporter'));
-        blocks.push(block('reifyPredicate'));
-        blocks.push('#');
-        blocks.push('-');
+        // blocks.push(block('reifyScript'));
+        // blocks.push(block('reifyReporter'));
+        // blocks.push(block('reifyPredicate'));
+        // blocks.push('#');
+        // blocks.push('-');
         blocks.push(block('reportSum'));
         blocks.push(block('reportDifference'));
         blocks.push(block('reportProduct'));
@@ -2231,18 +2236,18 @@ SpriteMorph.prototype.blockTemplates = function (category) {
             blocks.push('-');
         }
 
+        blocks.push(block('doDeclareVariables'));
         blocks.push(block('doSetVar'));
         blocks.push(block('doChangeVar'));
         blocks.push(block('doShowVar'));
         blocks.push(block('doHideVar'));
-        blocks.push(block('doDeclareVariables'));
 
     // inheritance:
 
-        if (StageMorph.prototype.enableInheritance) {
-            blocks.push('-');
-            blocks.push(block('doDeleteAttr'));
-        }
+        // if (StageMorph.prototype.enableInheritance) {
+        //     blocks.push('-');
+        //     blocks.push(block('doDeleteAttr'));
+        // }
 
     ///////////////////////////////
 
@@ -2388,7 +2393,7 @@ SpriteMorph.prototype.freshPalette = function (category) {
     palette.growth = new Point(0, MorphicPreferences.scrollBarSize);
 
     // toolbar:
-    
+
     palette.toolBar = new AlignmentMorph('column');
 
     searchButton = new PushButtonMorph(

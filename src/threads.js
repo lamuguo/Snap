@@ -2836,10 +2836,8 @@ Process.prototype.log = function (data) {
     // debugging primitives only work in dev mode, otherwise they're nop
     var world;
     if (this.homeContext.receiver) {
+        console.log('console.log: ' + data.asArray());
         world = this.homeContext.receiver.world();
-        if (world.isDevMode) {
-            console.log('Snap! ' + data.asArray());
-        }
     }
 };
 
